@@ -7,9 +7,11 @@ import (
 )
 
 
-func Users(route *gin.Engine) {
-	users := route.Group("/")
+func Users(route *gin.RouterGroup) {
+	users := route.Group("/users")
 	{
+		users.GET("/:id", controllers.FetchOneUser)
+		users.GET("/", controllers.FetchAllUsers)
 		users.POST("/signup", controllers.Signup)
 		users.POST("/login", controllers.Login)
 		users.GET("/validate", middleware.RequireAuth, controllers.Validate)

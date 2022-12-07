@@ -6,13 +6,12 @@ import (
 )
 
 
-func Posts(route *gin.Engine) {
+func Posts(route *gin.RouterGroup) {
 	posts := route.Group("/posts")
-	{
-		posts.POST("/", controllers.PostsCreate)
-		posts.GET("/", controllers.PostsIndex)
-		posts.GET("/:id", controllers.PostsShow)
-		posts.PUT("/:id", controllers.PostsUpdate)
-		posts.DELETE("/:id", controllers.PostsDelete)
-	}
+	
+	posts.POST("/", controllers.PostsCreate)
+	posts.GET("/", controllers.PostsIndex)
+	posts.GET("/:id", controllers.PostsShow)
+	posts.PUT("/:id", controllers.PostsUpdate)
+	posts.DELETE("/:id", controllers.PostsDelete)
 }

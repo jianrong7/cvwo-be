@@ -12,10 +12,31 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func FetchAllUsers(c *gin.Context) {
+	// Get all records
+	var users []models.User
+	initializers.DB.Find(&users)
+
+	c.JSON(200, gin.H{
+		"users": users,
+	})
+}
+
+func FetchOneUser(c *gin.Context) {
+	id := c.Param("id")
+
+	var user models.User
+	initializers.DB.First(&user, id)
+
+	c.JSON(200, gin.H{
+		"user": user,
+	})
+}
+
 func Signup(c *gin.Context) {
 	// get email/pass 
 	var body struct {
-		Email string
+		Username string
 		Password string
 	}
 
@@ -37,7 +58,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 	// create user
-	user := models.User{Email: body.Email, Password: string(hash)}
+	user := models.User{Username: body.Username, Password: string(hash)}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
@@ -54,7 +75,7 @@ func Signup(c *gin.Context) {
 func Login(c *gin.Context) {
 	// Get the email and pass off req body
 	var body struct {
-		Email string
+		Username string
 		Password string
 	}
 
@@ -67,7 +88,7 @@ func Login(c *gin.Context) {
 	}
 	// Look up requested user
 	var user models.User
-	initializers.DB.First(&user, "email = ?", body.Email)
+	initializers.DB.First(&user, "username = ?", body.Username)
 	// fmt.Println(user)
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -90,7 +111,8 @@ func Login(c *gin.Context) {
 	// Generate a jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+		// expire token after 20 minutes
+		"exp": time.Now().Add(time.Minute * 20).Unix(),
 	})
 	
 	// Sign and get the complete encoded token as a string using the secret
@@ -109,6 +131,8 @@ func Login(c *gin.Context) {
 	// send it back
 	c.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
+		"claims": token.Claims,
+		"username": user.Username,
 	})
 }
 
