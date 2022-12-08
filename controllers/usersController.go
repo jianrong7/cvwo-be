@@ -127,7 +127,8 @@ func Login(c *gin.Context) {
 	}
 
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600 * 24 * 30, "", "", false, true)
+	// set cookie for 20 minutes
+	c.SetCookie("Authorization", tokenString, 20 * 60, "", "", false, true)
 	// send it back
 	c.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
@@ -137,8 +138,17 @@ func Login(c *gin.Context) {
 }
 
 func Validate(c *gin.Context) {
-	user, _ := c.Get("user")
+	userData, _ := c.Get("user")
+	user := userData.(models.User)
+
+	tokenData, _ := c.Get("token")
+	token := tokenData.(*jwt.Token)
+
+	tokenString, _ := c.Cookie("Authorization")
+
 	c.JSON(http.StatusOK, gin.H{
-		"message": user,
+		"token": tokenString,
+		"claims": token.Claims,
+		"username": user.Username,
 	})
 }

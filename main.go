@@ -15,7 +15,13 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	r.Use(cors.Default())
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowCredentials = true	
+	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
+	r.Use(cors.New(config))
+
 	v1 := r.Group("/api/v1")
 	{
 		routes.Posts(v1)
