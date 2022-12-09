@@ -12,5 +12,7 @@ func init() {
 
 func main() {
   // Migrate the schema
-  initializers.DB.AutoMigrate(&models.Post{}, &models.User{})
+	// initializers.DB.Model(&models.Post).r
+  initializers.DB.AutoMigrate(&models.Post{}, &models.User{}, &models.Comment{})
+	// initializers.DB.Model(&models.Post{})
 }
