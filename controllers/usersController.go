@@ -15,7 +15,7 @@ import (
 func FetchAllUsers(c *gin.Context) {
 	// Get all records
 	var users []models.User
-	initializers.DB.Find(&users)
+	initializers.DB.Model(&models.User{}).Preload("Posts").Find(&users)
 
 	c.JSON(200, gin.H{
 		"users": users,

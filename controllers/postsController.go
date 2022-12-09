@@ -6,43 +6,60 @@ import (
 	"github.com/jianrong/cvwo-be/models"
 )
 
-func PostsCreate(c *gin.Context) {
+// gorm.Model
+// Title string
+// Body string
+// // Tags pq.StringArray `gorm:type:text[]"`
+// UserId uint
+// User User `gorm:"foreignKey:UserId"`
+// Upvotes uint
+// Downvotes uint
+// Comments []Comment
+// }
+
+func CreatePost(c *gin.Context) {
 	var body struct{
 		Title string
 		Body string
+		UserId uint
 	}
 	
 	c.Bind(&body)
 
 	// Create a post
-	post := models.Post{Title: body.Title, Body: body.Body}
+	postData := models.Post{Title: body.Title, Body: body.Body, UserId: body.UserId, Upvotes: 0, Downvotes: 0}
 
-	result := initializers.DB.Create(&post)
+	result := initializers.DB.Create(&postData)
 
 	if result.Error != nil {
 		c.Status(400)
 		return
 	}
+
+	var post models.Post
+	initializers.DB.Joins("User").Find(&post)
 	
 	c.JSON(200, gin.H{
 		"post": post,
 	})
 }
 
-func PostsIndex(c *gin.Context) {
+func FetchAllPosts(c *gin.Context) {
 	var posts []models.Post
-	initializers.DB.Find(&posts)
+	// initializers.DB.Find(&posts)
+	initializers.DB.Model(&models.Post{}).Preload("User").Find(&posts)
+
 
 	c.JSON(200, gin.H{
 		"posts": posts,
 	})
 }
 
-func PostsShow(c *gin.Context) {
+func FetchOnePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
-	initializers.DB.First(&post, id)
+	initializers.DB.Model(&models.Post{}).Preload("User").First(&post, id)
 	
 	c.JSON(200, gin.H{
 		"post": post,
