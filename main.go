@@ -1,26 +1,62 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
+	"github.com/jianrong/cvwo-be/models"
 	"github.com/jianrong/cvwo-be/routes"
 )
 
+// func init() {
+// 	initializers.LoadEnvVariables()
+// 	initializers.ConnectToDB()
+// }
 
-func init() {
-	initializers.LoadEnvVariables()
-	initializers.ConnectToDB()
-}
+// func main() {
+// 	gin.ForceConsoleColor()
+// 	r := gin.New()
+// 	r.Use(gin.Recovery())
+// 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+// 		// your custom format
+// 		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+// 				param.ClientIP,
+// 				param.TimeStamp.Format(time.RFC1123),
+// 				param.Method,
+// 				param.Path,
+// 				param.Request.Proto,
+// 				param.StatusCode,
+// 				param.Latency,
+// 				param.Request.UserAgent(),
+// 				param.ErrorMessage,
+// 		)
+// 	}))
+
+// 	config := cors.DefaultConfig()
+// 	config.AllowOrigins = []string{"http://localhost:8080"}
+// 	config.AllowCredentials = true
+// 	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
+// 	r.Use(cors.New(config))
+
+//   r.Run()
+// }
 
 func main() {
-	r := gin.Default()
+	initializers.LoadEnv()
+	loadAndMigrateDB()
+	serveApplication()
+}
 
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
-	config.AllowCredentials = true	
-	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
-	r.Use(cors.New(config))
+
+func loadAndMigrateDB() {
+	initializers.ConnectToDB()
+	initializers.DB.AutoMigrate(&models.User{})
+	initializers.DB.AutoMigrate(&models.Post{})
+}
+
+func serveApplication() {
+	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
 	{
@@ -28,5 +64,7 @@ func main() {
 		routes.Users(v1)
 	}
 
-  r.Run()
+	// r.Run(":3000")
+	r.Run()
+	fmt.Println("Server running on port 3000")
 }

@@ -3,15 +3,17 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/controllers"
+	"github.com/jianrong/cvwo-be/middleware"
 )
 
 
 func Posts(route *gin.RouterGroup) {
 	posts := route.Group("/posts")
 	
-	posts.POST("/", controllers.CreatePost)
-	posts.GET("/", controllers.FetchAllPosts)
+	posts.GET("/", controllers.GetAllPosts)
 	posts.GET("/:id", controllers.FetchOnePost)
-	posts.PUT("/:id", controllers.PostsUpdate)
-	posts.DELETE("/:id", controllers.PostsDelete)
+	posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)
+	posts.GET("/user", middleware.RequireAuth(), controllers.GetAllPostsFromUser)
+	posts.PUT("/:id", middleware.RequireAuth(), controllers.PostsUpdate)
+	posts.DELETE("/:id", middleware.RequireAuth(), controllers.PostsDelete)
 }

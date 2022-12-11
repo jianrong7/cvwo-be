@@ -1,58 +1,65 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
+	"github.com/jianrong/cvwo-be/utils"
 )
 
-// gorm.Model
-// Title string
-// Body string
-// // Tags pq.StringArray `gorm:type:text[]"`
-// UserId uint
-// User User `gorm:"foreignKey:UserId"`
-// Upvotes uint
-// Downvotes uint
-// Comments []Comment
-// }
-
 func CreatePost(c *gin.Context) {
-	var body struct{
-		Title string
-		Body string
-		UserId uint
+	var body models.Post
+
+	if c.ShouldBindJSON(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid body request",
+		})
+		return
 	}
-	
-	c.Bind(&body)
-
-	// Create a post
-	postData := models.Post{Title: body.Title, Body: body.Body, UserId: body.UserId, Upvotes: 0, Downvotes: 0}
-
-	result := initializers.DB.Create(&postData)
-
-	if result.Error != nil {
-		c.Status(400)
+	// determine current user from context
+	user, err := utils.CurrentUser(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	var post models.Post
-	initializers.DB.Joins("User").Find(&post)
-	
-	c.JSON(200, gin.H{
-		"post": post,
+	body.UserId = user.ID
+	savedPost, err := body.Save()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"post": savedPost,
 	})
 }
 
-func FetchAllPosts(c *gin.Context) {
-	var posts []models.Post
-	// initializers.DB.Find(&posts)
-	initializers.DB.Model(&models.Post{}).Preload("User").Find(&posts)
+func GetAllPosts(c *gin.Context) {
+  var posts []models.Post
+  err := initializers.DB.Preload("User").Find(&posts).Error
+  if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    return
+  }
+  c.JSON(http.StatusOK, gin.H{"posts": posts})
+}
 
+func GetAllPostsFromUser(c *gin.Context) {
+  user, err := utils.CurrentUser(c)
 
-	c.JSON(200, gin.H{
-		"posts": posts,
-	})
+  if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    return
+  }
+  c.JSON(http.StatusOK, gin.H{"posts": user.Posts})
 }
 
 func FetchOnePost(c *gin.Context) {
@@ -71,7 +78,7 @@ func PostsUpdate(c *gin.Context) {
 
 	var body struct{
 		Title string
-		Body string
+		Content string
 	}
 	
 	c.Bind(&body)
@@ -81,7 +88,7 @@ func PostsUpdate(c *gin.Context) {
 
 	initializers.DB.Model(&post).Updates(models.Post{
 		Title: body.Title,
-		Body: body.Body,
+		Content: body.Content,
 	})
 	
 	c.JSON(200, gin.H{
