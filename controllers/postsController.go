@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +26,7 @@ func CreatePost(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(user)
+	
 	body.UserId = user.ID
 	savedPost, err := body.Save()
 
@@ -67,7 +66,7 @@ func FetchOnePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
-	initializers.DB.Model(&models.Post{}).Preload("User").First(&post, id)
+	initializers.DB.First(&post, id)
 	
 	c.JSON(200, gin.H{
 		"post": post,

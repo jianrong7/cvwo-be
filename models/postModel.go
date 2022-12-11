@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/jianrong/cvwo-be/initializers"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -9,7 +10,7 @@ type Post struct {
   gorm.Model
   Title string `gorm:"type:text" json:"title"`
 	Content string `gorm:"type:text" json:"content"`
-  // Tags pq.StringArray `gorm:type:text[]"`
+  Tags pq.StringArray `gorm:"type:text[]" json:"tags"`
   UserId uint
   // User User `gorm:"foreignKey:UserId" json:"user"`
   Upvotes uint `gorm:"size:255" json:"upvotes"`

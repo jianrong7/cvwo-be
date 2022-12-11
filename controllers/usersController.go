@@ -114,7 +114,7 @@ func Login(c *gin.Context) {
 }
 
 func RefreshToken(c *gin.Context) {
-	token, err := utils.RefreshToken(c)
+	token, username, err := utils.RefreshToken(c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -123,6 +123,7 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"token": token, 
+		"token": token,
+		"username": username,
 	})
 }
