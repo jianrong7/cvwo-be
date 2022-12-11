@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,32 @@ func CreatePost(c *gin.Context) {
 
 func GetAllPosts(c *gin.Context) {
   var posts []models.Post
-	err := initializers.DB.Find(&posts).Error
+	var err error
+	sqlStatement := `SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL `
+
+	tags := c.Query("tags")
+	fmt.Println(tags)
+	if len(tags) != 0 {
+		sqlStatement += `AND tags @> '{` + tags + `}' `
+	}
+
+	sort := c.Query("sort")
+	if sort == "upvotes" {
+		sqlStatement += `ORDER BY "upvotes" `
+	} else if sort == "downvotes" {
+		sqlStatement += `ORDER BY "downvotes" `
+	} else {
+		sqlStatement += `ORDER BY "created_at" `
+	}
+
+	order := c.Query("order")
+	if order == "asc" {
+		sqlStatement += `asc`
+	} else {
+		sqlStatement += `desc`
+	}
+	
+	initializers.DB.Raw(sqlStatement).Scan(&posts)
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
