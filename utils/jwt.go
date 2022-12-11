@@ -14,10 +14,10 @@ import (
 
 var privateKey = []byte(os.Getenv("JWT_SECRET"))
 // generate JWT when logging in
-func GenerateJWT(user models.User) (string, error) {
+func GenerateJWT(userId uint) (string, error) {
 		// Generate a jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
+		"sub": userId,
 		
 		"iat": time.Now().Unix(),
 		// expire token after 20 minutes
@@ -70,11 +70,28 @@ func getToken(c *gin.Context) (*jwt.Token, error) {
 	return token, err
 }
 
-func getTokenFromRequest(context *gin.Context) string {
-	bearerToken := context.Request.Header.Get("Authorization")
+func getTokenFromRequest(c *gin.Context) string {
+	bearerToken := c.Request.Header.Get("Authorization")
 	splitToken := strings.Split(bearerToken, " ")
 	if len(splitToken) == 2 {
 			return splitToken[1]
 	}
 	return ""
+}
+
+func RefreshToken(c *gin.Context) (string, error) {
+		// get stale token first
+		staleToken, err := getToken(c)
+		if err != nil {
+			return "", err
+		}
+		claims, _ := staleToken.Claims.(jwt.MapClaims)
+		userId := uint(claims["sub"].(float64))
+		// Generate a jwt token
+		token, err := GenerateJWT(userId)
+			
+		if err != nil {
+			return "", err
+		}
+		return token, nil
 }

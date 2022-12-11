@@ -13,5 +13,6 @@ func Users(route *gin.RouterGroup) {
 		users.GET("/", controllers.FetchAllUsers)
 		users.POST("/signup", controllers.Signup)
 		users.POST("/login", controllers.Login)
+		users.GET("/refresh", controllers.RefreshToken)
 	}
 }

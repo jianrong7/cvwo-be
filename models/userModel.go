@@ -13,7 +13,7 @@ type User struct {
   gorm.Model
   Username string `gorm:"size:255;not null;unique" json:"username"`
 	Password string `gorm:"size:255;not null;" json:"-"`
-	Posts []Post
+	Posts []Post `json:"posts"`
 }
 
 func (user *User) Save() (*User, error) {
@@ -24,7 +24,7 @@ func (user *User) Save() (*User, error) {
 	return user, nil
 }
 
-// trim whitespace in username and hash password
+// (pre-defined GORM hook) trim whitespace in username and hash password
 func (user *User) BeforeSave(*gorm.DB) error {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {

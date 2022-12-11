@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
@@ -33,12 +34,6 @@ import (
 // 		)
 // 	}))
 
-// 	config := cors.DefaultConfig()
-// 	config.AllowOrigins = []string{"http://localhost:8080"}
-// 	config.AllowCredentials = true
-// 	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
-// 	r.Use(cors.New(config))
-
 //   r.Run()
 // }
 
@@ -51,6 +46,8 @@ func main() {
 
 func loadAndMigrateDB() {
 	initializers.ConnectToDB()
+	// initializers.DB.Migrator().DropTable(&models.User{})
+	// initializers.DB.Migrator().DropTable(&models.Post{})
 	initializers.DB.AutoMigrate(&models.User{})
 	initializers.DB.AutoMigrate(&models.Post{})
 }
@@ -58,13 +55,21 @@ func loadAndMigrateDB() {
 func serveApplication() {
 	r := gin.Default()
 
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowCredentials = true
+	// config.AddAllowHeaders("Access-")
+	// config.AllowOrigins = []string{"http://localhost:8080", "http://localhost:3000"}
+	// config.AllowCredentials = true
+	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
+	r.Use(cors.New(config))
+	
 	v1 := r.Group("/api/v1")
 	{
 		routes.Posts(v1)
 		routes.Users(v1)
 	}
 
-	// r.Run(":3000")
 	r.Run()
 	fmt.Println("Server running on port 3000")
 }

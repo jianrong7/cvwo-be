@@ -12,8 +12,11 @@ func Posts(route *gin.RouterGroup) {
 	
 	posts.GET("/", controllers.GetAllPosts)
 	posts.GET("/:id", controllers.FetchOnePost)
-	posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)
 	posts.GET("/user", middleware.RequireAuth(), controllers.GetAllPostsFromUser)
+
+	posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)
+
 	posts.PUT("/:id", middleware.RequireAuth(), controllers.PostsUpdate)
+	
 	posts.DELETE("/:id", middleware.RequireAuth(), controllers.PostsDelete)
 }

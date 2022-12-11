@@ -89,13 +89,12 @@ func Login(c *gin.Context) {
 
 	
 	// Generate a jwt token
-	token, err := utils.GenerateJWT(user)
+	token, err := utils.GenerateJWT(user.ID)
 	
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Unable to create token",
 		})
-
 		return
 	}
 
@@ -112,4 +111,18 @@ func Login(c *gin.Context) {
 	// 	"claims": token.Claims,
 	// 	"username": user.Username,
 	// })
+}
+
+func RefreshToken(c *gin.Context) {
+	token, err := utils.RefreshToken(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Unable to refresh token",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"token": token, 
+	})
 }

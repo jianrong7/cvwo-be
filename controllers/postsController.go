@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ func CreatePost(c *gin.Context) {
 		})
 		return
 	}
-
+	fmt.Println(user)
 	body.UserId = user.ID
 	savedPost, err := body.Save()
 
@@ -44,7 +45,7 @@ func CreatePost(c *gin.Context) {
 
 func GetAllPosts(c *gin.Context) {
   var posts []models.Post
-  err := initializers.DB.Preload("User").Find(&posts).Error
+	err := initializers.DB.Find(&posts).Error
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
