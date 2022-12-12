@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
@@ -20,12 +21,24 @@ func FetchAllUsers(c *gin.Context) {
 }
 
 func FetchOneUser(c *gin.Context) {
-	id := c.Param("id")
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
-	var user models.User
-	initializers.DB.First(&user, id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid ID",
+		})
+		return
+	}
+	user, err := models.FindUserById(uint(id))
 
-	c.JSON(200, gin.H{
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
 }

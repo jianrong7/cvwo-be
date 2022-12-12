@@ -11,7 +11,7 @@ func Posts(route *gin.RouterGroup) {
 	posts := route.Group("/posts")
 	
 	posts.GET("/", controllers.GetAllPosts)
-	posts.GET("/:id", controllers.FetchOnePost)
+	posts.GET("/:id", controllers.GetOnePost)
 	posts.GET("/user", middleware.RequireAuth(), controllers.GetAllPostsFromUser)
 
 	posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)

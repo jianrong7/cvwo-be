@@ -88,7 +88,7 @@ func GetAllPostsFromUser(c *gin.Context) {
   c.JSON(http.StatusOK, gin.H{"posts": user.Posts})
 }
 
-func FetchOnePost(c *gin.Context) {
+func GetOnePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
