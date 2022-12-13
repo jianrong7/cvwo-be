@@ -13,7 +13,14 @@ import (
 func FetchAllUsers(c *gin.Context) {
 	// Get all records
 	var users []models.User
-	initializers.DB.Model(&models.User{}).Preload("Posts").Find(&users)
+	err := initializers.DB.Model(&models.User{}).Preload("Posts").Find(&users).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"users": users,

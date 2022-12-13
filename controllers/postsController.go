@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +27,7 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 	
-	body.UserId = user.ID
+	body.UserID = user.ID
 	savedPost, err := body.Save()
 
 	if err != nil {
@@ -46,31 +45,20 @@ func CreatePost(c *gin.Context) {
 func GetAllPosts(c *gin.Context) {
   var posts []models.Post
 	var err error
-	sqlStatement := `SELECT * FROM "posts" WHERE "posts"."deleted_at" IS NULL `
 
 	tags := c.Query("tags")
-	fmt.Println(tags)
-	if len(tags) != 0 {
-		sqlStatement += `AND tags @> '{` + tags + `}' `
-	}
 
 	sort := c.Query("sort")
-	if sort == "upvotes" {
-		sqlStatement += `ORDER BY "upvotes" `
-	} else if sort == "downvotes" {
-		sqlStatement += `ORDER BY "downvotes" `
-	} else {
-		sqlStatement += `ORDER BY "created_at" `
+	if sort == "" {
+		sort = "created_at"
 	}
 
 	order := c.Query("order")
-	if order == "asc" {
-		sqlStatement += `asc`
-	} else {
-		sqlStatement += `desc`
+	if order == "" {
+		order = "desc"
 	}
 	
-	initializers.DB.Raw(sqlStatement).Scan(&posts)
+	initializers.DB.Where(`tags @> '{` + tags + `}'`).Order(sort + " " + order).Preload("User").Find(&posts)
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
