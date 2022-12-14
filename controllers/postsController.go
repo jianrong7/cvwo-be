@@ -7,6 +7,7 @@ import (
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
 	"github.com/jianrong/cvwo-be/utils"
+	"gorm.io/gorm"
 )
 
 func CreatePost(c *gin.Context) {
@@ -58,7 +59,7 @@ func GetAllPosts(c *gin.Context) {
 		order = "desc"
 	}
 	
-	initializers.DB.Where(`tags @> '{` + tags + `}'`).Order(sort + " " + order).Preload("User").Find(&posts)
+	initializers.DB.Where(`tags @> '{` + tags + `}'`).Order(sort + " " + order).Preload("User").Preload("Comments").Find(&posts)
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
@@ -80,7 +81,10 @@ func GetOnePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
-	initializers.DB.First(&post, id)
+	
+	initializers.DB.Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
+		return db.Order("comments.created_at DESC")
+	}).First(&post, id)
 	
 	c.JSON(200, gin.H{
 		"post": post,
