@@ -64,8 +64,9 @@ func Signup(c *gin.Context) {
 		Username: body.Username,
 		Password: body.Password,
 	}
+	
 	savedUser, err := user.Save()
-
+	
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create user",
@@ -146,4 +147,17 @@ func RefreshToken(c *gin.Context) {
 		"token": token,
 		"username": username,
 	})
+}
+
+func GetAllCommentsFromUser(c *gin.Context) {
+	userId := c.Param("id")
+	var comments []models.Comment
+
+	err := initializers.DB.Where("user_id = ?", userId).Preload("User").Find(&comments).Error
+  if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    return
+  }
+  c.JSON(http.StatusOK, gin.H{"comments": comments})
+
 }

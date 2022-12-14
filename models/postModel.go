@@ -11,11 +11,17 @@ type Post struct {
   Title string `gorm:"type:text" json:"title"`
 	Content string `gorm:"type:text" json:"content"`
   Tags pq.StringArray `gorm:"type:text[]" json:"tags"`
+
   UserID uint `json:"userId"`
-  User User
-  Upvotes uint `gorm:"size:255" json:"upvotes"`
-  Downvotes uint `gorm:"size:255" json:"downvotes"`
+  User User `json:"user"`
+
+  // RatingID uint `json:"ratingId"`
+  // Rating Rating `json:"rating"`
+
   Comments []Comment `json:"comments"`
+
+  Upvotes uint `json:"upvotes"`
+  Downvotes uint `json:"downvotes"`
 }
 
 func (post *Post) Save() (*Post, error) {

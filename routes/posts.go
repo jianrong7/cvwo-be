@@ -12,11 +12,12 @@ func Posts(route *gin.RouterGroup) {
 	
 	posts.GET("/", controllers.GetAllPosts)
 	posts.GET("/:id", controllers.GetOnePost)
-	posts.GET("/user", middleware.RequireAuth(), controllers.GetAllPostsFromUser)
+	posts.GET("/user", controllers.GetAllPostsFromUser)
 
 	posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)
 
 	posts.PUT("/:id", middleware.RequireAuth(), controllers.PostsUpdate)
 	
 	posts.DELETE("/:id", middleware.RequireAuth(), controllers.PostsDelete)
+	posts.GET("/comments/:id", controllers.GetAllCommentsFromPost)
 }

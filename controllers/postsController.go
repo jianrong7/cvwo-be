@@ -117,3 +117,15 @@ func PostsDelete(c *gin.Context) {
 
 	c.Status(200)
 }
+
+func GetAllCommentsFromPost(c *gin.Context) {
+	postId := c.Param("id")
+  var comments []models.Comment
+
+	err := initializers.DB.Where("post_id = ?", postId).Preload("User").Find(&comments).Error
+  if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    return
+  }
+  c.JSON(http.StatusOK, gin.H{"comments": comments})
+}

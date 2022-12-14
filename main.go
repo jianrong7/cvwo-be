@@ -48,8 +48,12 @@ func loadAndMigrateDB() {
 	initializers.ConnectToDB()
 	// initializers.DB.Migrator().DropTable(&models.User{})
 	// initializers.DB.Migrator().DropTable(&models.Post{})
-	initializers.DB.AutoMigrate(&models.User{})
+	// initializers.DB.Migrator().DropTable(&models.Rating{})
+	// initializers.DB.Migrator().DropTable(&models.Comment{})
 	initializers.DB.AutoMigrate(&models.Post{})
+	// initializers.DB.AutoMigrate(&models.Rating{})
+	// initializers.DB.AutoMigrate(&models.Comment{})
+	initializers.DB.AutoMigrate(&models.User{})
 }
 
 func serveApplication() {
@@ -66,6 +70,7 @@ func serveApplication() {
 	
 	v1 := r.Group("/api/v1")
 	{
+		routes.Comments(v1)
 		routes.Posts(v1)
 		routes.Users(v1)
 	}

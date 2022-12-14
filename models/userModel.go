@@ -7,6 +7,7 @@ import (
 	"github.com/jianrong/cvwo-be/initializers"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type User struct {
@@ -18,7 +19,7 @@ type User struct {
 }
 
 func (user *User) Save() (*User, error) {
-	err := initializers.DB.Create(&user).Error
+	err := initializers.DB.Omit(clause.Associations).Create(&user).Error
 	if err != nil {
 		return &User{}, err
 	}
