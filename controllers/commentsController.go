@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
 	"github.com/jianrong/cvwo-be/utils"
 )
@@ -39,4 +40,12 @@ func CreateComment(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"comment": savedComment,
 	})
+}
+
+func CommentDelete(c *gin.Context) {
+	id := c.Param("id")
+
+	initializers.DB.Delete(&models.Comment{}, id)
+
+	c.Status(200)
 }
