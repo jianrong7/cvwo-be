@@ -122,6 +122,7 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token": token, 
 		"username": user.Username,
+		"ID": user.ID,
 	})
 	// c.SetSameSite(http.SameSiteLaxMode)
 	// // set cookie for 20 minutes
