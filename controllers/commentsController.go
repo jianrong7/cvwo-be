@@ -42,6 +42,24 @@ func CreateComment(c *gin.Context) {
 	})
 }
 
+func CommentUpdate(c *gin.Context) {
+	id := c.Param("id")
+
+	var body struct{
+		Content string
+	}
+	
+	c.Bind(&body)
+
+	var comment models.Comment
+
+	initializers.DB.Where("ID = ?", id).Model(&comment).Update("content", body.Content)
+	
+	c.JSON(200, gin.H{
+		"comment": comment,
+	})
+}
+
 func CommentDelete(c *gin.Context) {
 	id := c.Param("id")
 

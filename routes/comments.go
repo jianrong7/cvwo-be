@@ -17,7 +17,7 @@ func Comments(route *gin.RouterGroup) {
 
 	// posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)
 
-	// posts.PUT("/:id", middleware.RequireAuth(), controllers.PostsUpdate)
+	comments.PUT("/:id", middleware.RequireAuth(), controllers.CommentUpdate)
 	
 	comments.DELETE("/:id", middleware.RequireAuth(), controllers.CommentDelete)
 }
