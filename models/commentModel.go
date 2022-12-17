@@ -2,17 +2,13 @@ package models
 
 import (
 	"github.com/jianrong/cvwo-be/initializers"
-	"gorm.io/gorm"
 )
 
 type Comment struct {
-  gorm.Model
-	Content string `json:"content"`
+	Entry `gorm:"embedded"`
 	// Replies []*Comment `gorm:"many2many:replies"`
 	PostID uint `gorm:"not null;" json:"postId"`
 	Post Post `json:"post"`
-	UserID uint `json:"userId"`
-	User User `json:"user"`
 }
 
 func (comment *Comment) Save() (*Comment, error) {

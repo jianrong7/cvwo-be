@@ -16,6 +16,7 @@ type User struct {
 	Password string 	 `gorm:"size:255;not null;" json:"-"`
 	Posts 	 []Post 	 `json:"posts"`
 	Comments []Comment `json:"comments"`
+	Ratings	 []Rating  `json:"ratings"`
 }
 
 func (user *User) Save() (*User, error) {

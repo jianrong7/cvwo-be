@@ -61,7 +61,15 @@ func GetAllPosts(c *gin.Context) {
 		order = "desc"
 	}
 	
-	initializers.DB.Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").Where(`tags @> '{` + tags + `}'`).Order(sort + " " + order).Preload("User").Preload("Comments").Find(&posts)
+	initializers.DB.
+	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
+	Where(`tags @> '{` + tags + `}'`).
+	Order(sort + " " + order).
+	Preload("User").
+	Preload("Comments").
+	Preload("Ratings", "entry_type = 'post'").
+	Find(&posts)
+	
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
@@ -83,13 +91,20 @@ func GetOnePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
+	var upvotes []models.Rating
+	var downvotes []models.Rating
 	
-	initializers.DB.Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
+	initializers.DB.Preload("Ratings", "entry_type = 'post'").Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Order("comments.created_at DESC")
 	}).First(&post, id)
+
+	initializers.DB.Where(map[string]interface{}{"entry_id": id, "entry_type": "post", "value": 1}).Find(&upvotes)
+	initializers.DB.Where(map[string]interface{}{"entry_id": id, "entry_type": "post", "value": -1}).Find(&downvotes)
 	
 	c.JSON(200, gin.H{
 		"post": post,
+		"upvotes": upvotes,
+		"downvotes": downvotes,
 	})
 }
 
@@ -106,10 +121,8 @@ func PostsUpdate(c *gin.Context) {
 	var post models.Post
 	initializers.DB.First(&post, id)
 
-	initializers.DB.Model(&post).Updates(models.Post{
-		Title: body.Title,
-		Content: body.Content,
-	})
+	initializers.DB.Model(&post).
+	Updates(map[string]interface{}{"title": body.Title, "content": body.Content})
 	
 	c.JSON(200, gin.H{
 		"post": post,

@@ -10,33 +10,6 @@ import (
 	"github.com/jianrong/cvwo-be/routes"
 )
 
-// func init() {
-// 	initializers.LoadEnvVariables()
-// 	initializers.ConnectToDB()
-// }
-
-// func main() {
-// 	gin.ForceConsoleColor()
-// 	r := gin.New()
-// 	r.Use(gin.Recovery())
-// 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-// 		// your custom format
-// 		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
-// 				param.ClientIP,
-// 				param.TimeStamp.Format(time.RFC1123),
-// 				param.Method,
-// 				param.Path,
-// 				param.Request.Proto,
-// 				param.StatusCode,
-// 				param.Latency,
-// 				param.Request.UserAgent(),
-// 				param.ErrorMessage,
-// 		)
-// 	}))
-
-//   r.Run()
-// }
-
 func main() {
 	initializers.LoadEnv()
 	loadAndMigrateDB()
@@ -51,8 +24,8 @@ func loadAndMigrateDB() {
 	// initializers.DB.Migrator().DropTable(&models.Rating{})
 	// initializers.DB.Migrator().DropTable(&models.Comment{})
 	initializers.DB.AutoMigrate(&models.Post{})
-	// initializers.DB.AutoMigrate(&models.Rating{})
-	// initializers.DB.AutoMigrate(&models.Comment{})
+	initializers.DB.AutoMigrate(&models.Rating{})
+	initializers.DB.AutoMigrate(&models.Comment{})
 	initializers.DB.AutoMigrate(&models.User{})
 }
 
@@ -73,6 +46,7 @@ func serveApplication() {
 		routes.Comments(v1)
 		routes.Posts(v1)
 		routes.Users(v1)
+		routes.Ratings(v1)
 	}
 
 	r.Run()
