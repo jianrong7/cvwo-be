@@ -49,6 +49,8 @@ func GetAllPosts(c *gin.Context) {
 
 	tags := c.Query("tags")
 
+	search := c.Query("search")
+
 	sort := c.Query("sort")
 	if sort == "" {
 		sort = "created_at"
@@ -59,7 +61,7 @@ func GetAllPosts(c *gin.Context) {
 		order = "desc"
 	}
 	
-	initializers.DB.Where(`tags @> '{` + tags + `}'`).Order(sort + " " + order).Preload("User").Preload("Comments").Find(&posts)
+	initializers.DB.Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").Where(`tags @> '{` + tags + `}'`).Order(sort + " " + order).Preload("User").Preload("Comments").Find(&posts)
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
