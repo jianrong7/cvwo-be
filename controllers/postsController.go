@@ -51,25 +51,47 @@ func GetAllPosts(c *gin.Context) {
 
 	search := c.Query("search")
 
-	sort := c.Query("sort")
-	if sort == "" {
-		sort = "created_at"
-	}
+	// sort := c.Query("sort")
+	// if sort == "downvotes" {
+	// 	initializers.DB.
+	// 	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
+	// 	Where(`tags @> '{` + tags + `}'`).
+	// 	Preload("User").
+	// 	Preload("Comments").
+	// 	Preload("Upvotes", "entry_type = 'post' AND value = ?", 1).
+	// 	Preload("Downvotes", "entry_type = 'post' AND value = ?", -1, func(db *gorm.DB) *gorm.DB {
+	// 		return db.Group("ratings.id").Group("ratings.value").Order("COUNT(ratings.value) DESC")
+	// 	}).
+	// 	Find(&posts)
+	// } else if sort == "upvotes" {
+	// 	initializers.DB.
+	// 	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
+	// 	Where(`tags @> '{` + tags + `}'`).
+	// 	Preload("User").
+	// 	Preload("Comments").
+	// 	Preload("Upvotes", "entry_type = 'post' AND value = ?", 1, func(db *gorm.DB) *gorm.DB {
+	// 		return db.Group("ratings.id").Group("ratings.value").Order("COUNT(value) DESC")
+	// 	}).
+	// 	Preload("Downvotes", "entry_type = 'post' AND value = ?", -1).
+	// 	Order("downvotes").
+	// 	Find(&posts)
+	// } else {
+		initializers.DB.
+		Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
+		Where(`tags @> '{` + tags + `}'`).
+		Order("created_at desc").
+		Preload("User").
+		Preload("Comments").
+		Preload("Upvotes", "entry_type = 'post' AND value = ?", 1).
+		Preload("Downvotes", "entry_type = 'post' AND value = ?", -1).
+		Find(&posts)
+	// }
 
-	order := c.Query("order")
-	if order == "" {
-		order = "desc"
-	}
-	
-	initializers.DB.
-	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
-	Where(`tags @> '{` + tags + `}'`).
-	Order(sort + " " + order).
-	Preload("User").
-	Preload("Comments").
-	Preload("Ratings", "entry_type = 'post'").
-	Find(&posts)
-	
+	// order := c.Query("order")
+	// if order == "" {
+	// 	order = "desc"
+	// }
+
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return
@@ -94,9 +116,13 @@ func GetOnePost(c *gin.Context) {
 	var upvotes []models.Rating
 	var downvotes []models.Rating
 	
-	initializers.DB.Preload("Ratings", "entry_type = 'post'").Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
+	initializers.DB.Preload("Upvotes", "entry_type = 'post' AND value = ?", 1).
+	Preload("Downvotes", "entry_type = 'post' AND value = ?", -1).
+	Preload("User").
+	Preload("Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Order("comments.created_at DESC")
-	}).First(&post, id)
+	}).
+	First(&post, id)
 
 	initializers.DB.Where(map[string]interface{}{"entry_id": id, "entry_type": "post", "value": 1}).Find(&upvotes)
 	initializers.DB.Where(map[string]interface{}{"entry_id": id, "entry_type": "post", "value": -1}).Find(&downvotes)
@@ -141,7 +167,14 @@ func GetAllCommentsFromPost(c *gin.Context) {
 	postId := c.Param("id")
   var comments []models.Comment
 
-	err := initializers.DB.Order("created_at desc").Where("post_id = ?", postId).Preload("User").Find(&comments).Error
+	err := initializers.DB.
+	Order("created_at desc").
+	Where("post_id = ?", postId).
+	Preload("Upvotes", "entry_type = 'comment' AND value = ?", 1).
+	Preload("Downvotes", "entry_type = 'comment' AND value = ?", -1).
+	Preload("User").
+	Find(&comments).Error
+
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     return

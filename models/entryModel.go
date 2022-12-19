@@ -13,7 +13,8 @@ type Entry struct {
   UpdatedAt time.Time
   DeletedAt gorm.DeletedAt `gorm:"index"`
 	Content string `gorm:"type:text" json:"content"`
-  Ratings []Rating `json:"ratings"`
+  Upvotes []Rating `json:"upvotes"`
+  Downvotes []Rating `json:"downvotes"`
   UserID uint `json:"userId"`
   User User `json:"user"`
 }

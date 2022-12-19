@@ -10,8 +10,9 @@ import (
 func Ratings(route *gin.RouterGroup) {
 	ratings := route.Group("/ratings")
 	
-	
-	ratings.POST("/", middleware.RequireAuth(), controllers.CreateRating)
+	// using PUT method here guarantees indempotence. Create rating if it does not exist and also updates it if it exists.
+	ratings.PUT("/", middleware.RequireAuth(), controllers.CreateRating)
+
 	// posts.GET("/:id", controllers.GetOnePost)
 	// posts.GET("/user", middleware.RequireAuth(), controllers.GetAllPostsFromUser)
 

@@ -8,7 +8,7 @@ import (
 type Rating struct {
   gorm.Model
 	// Value can tell if its an upvote or downvote. 1 is upvote, -1 is downvote.
-	Value uint `json:"value"`
+	Value int `json:"value"`
 
 	// each rating belongs to a user.
 	UserID uint `json:"userId"`
