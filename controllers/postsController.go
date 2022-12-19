@@ -1,12 +1,16 @@
 package controllers
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
 	"github.com/jianrong/cvwo-be/utils"
+	gogpt "github.com/sashabaranov/go-gpt3"
 	"gorm.io/gorm"
 )
 
@@ -180,4 +184,35 @@ func GetAllCommentsFromPost(c *gin.Context) {
     return
   }
   c.JSON(http.StatusOK, gin.H{"comments": comments})
+}
+
+func CreatePostFromOpenAI(c *gin.Context) {
+	var body models.AiInput
+	fmt.Print(body)
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	gpt := gogpt.NewClient(os.Getenv("OPENAI_API"))
+	ctx := context.Background()
+
+	req := gogpt.CompletionRequest{
+		Model: "text-davinci-003",
+		MaxTokens: body.MaxTokens,
+		Prompt:    body.Prompt,
+		Temperature: 0.5,
+	}
+
+	resp, err := gpt.CreateCompletion(ctx, req)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": resp.Choices[0].Text})
 }

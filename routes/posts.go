@@ -20,4 +20,5 @@ func Posts(route *gin.RouterGroup) {
 	
 	posts.DELETE("/:id", middleware.RequireAuth(), controllers.PostsDelete)
 	posts.GET("/comments/:id", controllers.GetAllCommentsFromPost)
+	posts.POST("/ai", middleware.RequireAuth(), controllers.CreatePostFromOpenAI)
 }
