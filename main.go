@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/middleware"
@@ -42,7 +41,7 @@ func serveApplication() {
 	// // config.AllowCredentials = true
 	// config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
 	// r.Use(cors.New(config))
-	r.Use(cors.Default())
+	// r.Use(cors.Default())
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
