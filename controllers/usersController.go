@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -124,15 +125,6 @@ func Login(c *gin.Context) {
 		"username": user.Username,
 		"ID": user.ID,
 	})
-	// c.SetSameSite(http.SameSiteLaxMode)
-	// // set cookie for 20 minutes
-	// c.SetCookie("Authorization", tokenString, 20 * 60, "", "", false, true)
-	// // send it back
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"token": tokenString,
-	// 	"claims": token.Claims,
-	// 	"username": user.Username,
-	// })
 }
 
 func RefreshToken(c *gin.Context) {
@@ -161,4 +153,50 @@ func GetAllCommentsFromUser(c *gin.Context) {
   }
   c.JSON(http.StatusOK, gin.H{"comments": comments})
 
+}
+
+func GetAllSelectedEntries(c *gin.Context) {
+  var posts []models.Post
+	var comments []models.Comment
+	var postIds []int
+	var commentIds []int
+
+	var body models.SelectedEntries
+	
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	for _, tag := range body.PostIds {
+		postIds = append(postIds, int(tag))
+	}
+
+	for _, tag := range body.CommentIds {
+		commentIds = append(commentIds, int(tag))
+	}
+
+	err := initializers.DB.Where("id IN ?", postIds).
+	Where("user_id = ?", body.UserId).
+	Order("created_at desc").
+	Find(&posts).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	err = initializers.DB.Where("id IN ?", commentIds).
+	Where("user_id = ?", body.UserId).
+	Order("created_at desc").
+	Find(&comments).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Print(comments)
+	c.JSON(http.StatusOK, gin.H{"posts": posts, "comments": comments})
 }

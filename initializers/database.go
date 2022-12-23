@@ -25,6 +25,7 @@ func ConnectToDB() {
 	)
 	var err error
 	dsn := os.Getenv("DB_URI")
+	
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: newLogger})
 
 	if err != nil {

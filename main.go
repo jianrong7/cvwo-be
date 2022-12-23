@@ -40,6 +40,12 @@ func serveApplication() {
 	// config.AllowCredentials = true
 	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
 	r.Use(cors.New(config))
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "It is working",
+		})
+	})
 	
 	v1 := r.Group("/api/v1")
 	{

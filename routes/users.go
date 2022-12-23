@@ -15,5 +15,6 @@ func Users(route *gin.RouterGroup) {
 		users.POST("/login", controllers.Login)
 		users.GET("/refresh", controllers.RefreshToken)
 		users.GET("/comments/:id", controllers.GetAllCommentsFromUser)
+		users.POST("/selected", controllers.GetAllSelectedEntries)
 	}
 }

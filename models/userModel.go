@@ -54,7 +54,17 @@ func FindUserByUsername(username string) (User, error) {
 
 func FindUserById(userId uint) (User, error) {
 	var user User
-	err := initializers.DB.Preload("Posts").Where("ID=?", userId).Find(&user).Error
+	err := initializers.DB.Preload("Comments", func(db *gorm.DB) *gorm.DB {
+		return db.Order("comments.created_at DESC")
+	}).
+	Preload("Ratings", func(db *gorm.DB) *gorm.DB {
+		return db.Order("ratings.created_at DESC")
+	}).
+	Preload("Posts", func(db *gorm.DB) *gorm.DB {
+		return db.Order("posts.created_at DESC")
+	}).
+	Where("ID=?", userId).
+	Find(&user).Error
 	if err != nil {
 		return User{}, err
 	}
