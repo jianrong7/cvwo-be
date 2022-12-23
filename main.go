@@ -36,7 +36,7 @@ func serveApplication() {
 	// config.AllowAllOrigins = true
 	config.AllowCredentials = true
 	// config.AddAllowHeaders("Access-")
-	config.AllowOrigins = []string{"http://localhost:8080", "http://localhost:3000"}
+	config.AllowOrigins = []string{"http://localhost:8080", "http://localhost:3000", "http://cvwo-fe.s3.ap-southeast-1.amazonaws.com"}
 	// config.AllowCredentials = true
 	config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
 	r.Use(cors.New(config))
