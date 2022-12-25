@@ -54,46 +54,15 @@ func GetAllPosts(c *gin.Context) {
 
 	search := c.Query("search")
 
-	// sort := c.Query("sort")
-	// if sort == "downvotes" {
-	// 	initializers.DB.
-	// 	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
-	// 	Where(`tags @> '{` + tags + `}'`).
-	// 	Preload("User").
-	// 	Preload("Comments").
-	// 	Preload("Upvotes", "entry_type = 'post' AND value = ?", 1).
-	// 	Preload("Downvotes", "entry_type = 'post' AND value = ?", -1, func(db *gorm.DB) *gorm.DB {
-	// 		return db.Group("ratings.id").Group("ratings.value").Order("COUNT(ratings.value) DESC")
-	// 	}).
-	// 	Find(&posts)
-	// } else if sort == "upvotes" {
-	// 	initializers.DB.
-	// 	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
-	// 	Where(`tags @> '{` + tags + `}'`).
-	// 	Preload("User").
-	// 	Preload("Comments").
-	// 	Preload("Upvotes", "entry_type = 'post' AND value = ?", 1, func(db *gorm.DB) *gorm.DB {
-	// 		return db.Group("ratings.id").Group("ratings.value").Order("COUNT(value) DESC")
-	// 	}).
-	// 	Preload("Downvotes", "entry_type = 'post' AND value = ?", -1).
-	// 	Order("downvotes").
-	// 	Find(&posts)
-	// } else {
-		initializers.DB.
-		Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
-		Where(`tags @> '{` + tags + `}'`).
-		Order("created_at desc").
-		Preload("User").
-		Preload("Comments").
-		Preload("Upvotes", "entry_type = 'post' AND value = ?", 1).
-		Preload("Downvotes", "entry_type = 'post' AND value = ?", -1).
-		Find(&posts)
-	// }
-
-	// order := c.Query("order")
-	// if order == "" {
-	// 	order = "desc"
-	// }
+	initializers.DB.
+	Where("UPPER(title) LIKE UPPER('%" + search + "%') OR UPPER(content) LIKE UPPER('%" + search + "%')").
+	Where(`tags @> '{` + tags + `}'`).
+	Order("created_at desc").
+	Preload("User").
+	Preload("Comments").
+	Preload("Upvotes", "entry_type = 'post' AND value = ?", 1).
+	Preload("Downvotes", "entry_type = 'post' AND value = ?", -1).
+	Find(&posts)
 
   if err != nil {
     c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -145,7 +114,7 @@ func PostsUpdate(c *gin.Context) {
 		Content string
 	}
 	
-	c.Bind(&body)
+	c.ShouldBindJSON(&body)
 
 	var post models.Post
 	initializers.DB.First(&post, id)
@@ -189,7 +158,7 @@ func CreatePostFromOpenAI(c *gin.Context) {
 	var body models.AiInput
 	fmt.Print(body)
 
-	if c.Bind(&body) != nil {
+	if c.ShouldBindJSON(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})

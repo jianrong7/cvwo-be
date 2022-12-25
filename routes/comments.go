@@ -9,13 +9,9 @@ import (
 
 func Comments(route *gin.RouterGroup) {
 	comments := route.Group("/comments")
-	
+	comments.GET("/:id", controllers.GetOneComment)
 	
 	comments.POST("/", middleware.RequireAuth(), controllers.CreateComment)
-	// posts.GET("/:id", controllers.GetOnePost)
-	// posts.GET("/user", middleware.RequireAuth(), controllers.GetAllPostsFromUser)
-
-	// posts.POST("/", middleware.RequireAuth(), controllers.CreatePost)
 
 	comments.PUT("/:id", middleware.RequireAuth(), controllers.CommentUpdate)
 	

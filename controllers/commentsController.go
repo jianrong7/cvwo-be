@@ -9,27 +9,22 @@ import (
 	"github.com/jianrong/cvwo-be/utils"
 )
 
-// func GetOneComment(c *gin.Context) {
-// 	id := c.Param("id")
+func GetOneComment(c *gin.Context) {
+	id := c.Param("id")
+	var comment models.Comment
 
-// 	// var post models.Post
-// 	var comment models.Comment
-// 	var upvotes []models.Rating
-// 	var downvotes []models.Rating
+	err := initializers.DB.First(&comment, id).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-// 	initializers.DB.Preload("Ratings", "entry_type = 'post'").Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
-// 		return db.Order("comments.created_at DESC")
-// 	}).First(&post, id)
-
-// 	initializers.DB.Where(map[string]interface{}{"entry_id": id, "entry_type": "post", "value": 1}).Find(&upvotes)
-// 	initializers.DB.Where(map[string]interface{}{"entry_id": id, "entry_type": "post", "value": -1}).Find(&downvotes)
-
-// 	c.JSON(200, gin.H{
-// 		"comment": comment,
-// 		"upvotes": upvotes,
-// 		"downvotes": downvotes,
-// 	})
-// }
+	c.JSON(http.StatusOK, gin.H{
+		"comment": comment,
+	})
+}
 
 func CreateComment(c *gin.Context) {
 	var body models.Comment
@@ -71,7 +66,12 @@ func CommentUpdate(c *gin.Context) {
 		Content string
 	}
 	
-	c.Bind(&body)
+	if c.ShouldBindJSON(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "failed to read body",
+		})
+		return
+	}
 
 	var comment models.Comment
 

@@ -6,7 +6,6 @@ import (
 
 type Comment struct {
 	Entry `gorm:"embedded"`
-	Replies []*Comment `gorm:"many2many:replies"`
 	PostID uint `gorm:"not null;" json:"postId"`
 	Post Post `json:"post"`
 }

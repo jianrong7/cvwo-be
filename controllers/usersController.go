@@ -61,7 +61,7 @@ func Signup(c *gin.Context) {
 	// get username/pass
 	var body models.AuthenticationInput
 
-	if c.Bind(&body) != nil {
+	if c.ShouldBindJSON(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
@@ -87,7 +87,7 @@ func Login(c *gin.Context) {
 	// Get the email and pass off req body
 	var body models.AuthenticationInput
 
-	if c.Bind(&body) != nil {
+	if c.ShouldBindJSON(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
@@ -172,7 +172,7 @@ func GetAllSelectedEntries(c *gin.Context) {
 
 	var body models.SelectedEntries
 	
-	if c.Bind(&body) != nil {
+	if c.ShouldBindJSON(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
@@ -212,7 +212,7 @@ func GetAllSelectedEntries(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 	var body models.ImageInput
-	if c.Bind(&body) != nil {
+	if c.ShouldBindJSON(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{ "error": "Failed to read body" })
 		return
 	}
