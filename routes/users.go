@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/controllers"
+	"github.com/jianrong/cvwo-be/middleware"
 )
 
 
@@ -16,5 +17,7 @@ func Users(route *gin.RouterGroup) {
 		users.GET("/refresh", controllers.RefreshToken)
 		users.GET("/comments/:id", controllers.GetAllCommentsFromUser)
 		users.POST("/selected", controllers.GetAllSelectedEntries)
+		users.POST("/:id", middleware.RequireAuth(), controllers.UploadImageToS3)
+		users.PUT("/:id", middleware.RequireAuth(), controllers.UpdateUser)
 	}
 }

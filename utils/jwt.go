@@ -79,24 +79,24 @@ func getTokenFromRequest(c *gin.Context) string {
 	return ""
 }
 
-func RefreshToken(c *gin.Context) (string, string, error) {
+func RefreshToken(c *gin.Context) (string, models.User, error) {
 		// get stale token first
 		staleToken, err := getToken(c)
 		if err != nil {
-			return "", "", err
+			return "", models.User{}, err
 		}
 		claims, _ := staleToken.Claims.(jwt.MapClaims)
 		userId := uint(claims["sub"].(float64))
 		user, err := models.FindUserById(userId)
 		if err != nil {
-			return "", "", err
+			return "", models.User{}, err
 		}
 
 		// Generate a jwt token
 		token, err := GenerateJWT(userId)
 			
 		if err != nil {
-			return "", "", err
+			return "", models.User{}, err
 		}
-		return token, user.Username, nil
+		return token, user, nil
 }

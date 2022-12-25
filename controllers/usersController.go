@@ -1,11 +1,17 @@
 package controllers
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
 	"github.com/jianrong/cvwo-be/utils"
@@ -124,11 +130,12 @@ func Login(c *gin.Context) {
 		"token": token, 
 		"username": user.Username,
 		"ID": user.ID,
+		"profilePicture": user.ProfilePicture,
 	})
 }
 
 func RefreshToken(c *gin.Context) {
-	token, username, err := utils.RefreshToken(c)
+	token, user, err := utils.RefreshToken(c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -138,7 +145,9 @@ func RefreshToken(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
-		"username": username,
+		"username": user.Username,
+		"ID": user.ID,
+		"profilePicture": user.ProfilePicture,
 	})
 }
 
@@ -199,4 +208,69 @@ func GetAllSelectedEntries(c *gin.Context) {
 	}
 	fmt.Print(comments)
 	c.JSON(http.StatusOK, gin.H{"posts": posts, "comments": comments})
+}
+
+func UpdateUser(c *gin.Context) {
+	var body models.ImageInput
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{ "error": "Failed to read body" })
+		return
+	}
+
+	var user models.User
+
+	err := initializers.DB.Model(&user).Where("id = ?", body.UserId).Update("profile_picture", body.ImageName).Error
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{ "error": err })
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": user,
+	})
+}
+
+func UploadImageToS3(c *gin.Context) {
+	form, _ := c.MultipartForm()
+	images := form.File["image"]
+	id := uuid.New()
+	var imageName string
+
+	for _, image := range images {
+		f, err := image.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err,
+			})
+			return
+		}
+		defer f.Close()
+		size := image.Size
+		buffer := make([]byte, size)
+		f.Read(buffer)
+    fileBytes := bytes.NewReader(buffer)
+    fileType := http.DetectContentType(buffer)
+    path := id.String() + image.Filename
+		imageName = path
+
+		awsClient := initializers.AwsClient()
+		uploader := manager.NewUploader(awsClient)
+		_, err = uploader.Upload(context.TODO(), &s3.PutObjectInput{
+			Bucket:        aws.String("cvwo-user-profiles"),
+      Key:           aws.String(path),
+      Body:          fileBytes,
+      ContentLength: size,
+      ContentType:   aws.String(fileType),
+    })
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err,
+			})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"imageName": imageName,
+	})
 }

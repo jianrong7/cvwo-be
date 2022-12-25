@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
@@ -197,7 +196,7 @@ func CreatePostFromOpenAI(c *gin.Context) {
 		return
 	}
 
-	gpt := gogpt.NewClient(os.Getenv("OPENAI_API"))
+	gpt := initializers.OpenAiClient()
 	ctx := context.Background()
 
 	req := gogpt.CompletionRequest{
