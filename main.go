@@ -19,10 +19,6 @@ func main() {
 
 func loadAndMigrateDB() {
 	initializers.ConnectToDB()
-	// initializers.DB.Migrator().DropTable(&models.User{})
-	// initializers.DB.Migrator().DropTable(&models.Post{})
-	// initializers.DB.Migrator().DropTable(&models.Rating{})
-	// initializers.DB.Migrator().DropTable(&models.Comment{})
 	initializers.DB.AutoMigrate(&models.Post{})
 	initializers.DB.AutoMigrate(&models.Rating{})
 	initializers.DB.AutoMigrate(&models.Comment{})
@@ -33,19 +29,9 @@ func serveApplication() {
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 
-	// config := cors.DefaultConfig()
-	// // config.AllowAllOrigins = true
-	// config.AllowCredentials = true
-	// // config.AddAllowHeaders("Access-")
-	// config.AllowOrigins = []string{"http://localhost:8080", "http://localhost:3000", "http://cvwo-fe.s3.ap-southeast-1.amazonaws.com"}
-	// // config.AllowCredentials = true
-	// config.AllowHeaders = []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"}
-	// r.Use(cors.New(config))
-	// r.Use(cors.Default())
-
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "It is working",
+			"message": "pong",
 		})
 	})
 	
