@@ -120,7 +120,7 @@ func PostsUpdate(c *gin.Context) {
 	initializers.DB.First(&post, id)
 
 	initializers.DB.Model(&post).
-	Updates(map[string]interface{}{"title": body.Title, "content": body.Content})
+	Updates(map[string]interface{}{"content": body.Content})
 	
 	c.JSON(200, gin.H{
 		"post": post,
