@@ -2,8 +2,9 @@
 
 A web forum built with React and Golang.
 
-You can find the live version of the project [here](https://cvwo-fe.s3.ap-southeast-1.amazonaws.com/index.html).
-You can find the backend API [here](https://3.1.102.180.nip.io/) and its repository [here](https://github.com/jianrong7/cvwo-be).
+You can find the live version of the project [here](https://3.1.102.180.nip.io).
+Postman API [here](https://www.postman.com/spacecraft-candidate-84168725/workspace/cvwo/collection/16590827-e7b9e933-5a8b-4297-939b-6372028f8dfc).
+You can find the frontend [here](https://d3mj3t330xelda.cloudfront.net) and its repository [here](https://github.com/jianrong7/cvwo-fe).
 
 ## Submission Details
 
