@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
 	"github.com/jianrong/cvwo-be/models"
@@ -42,6 +43,7 @@ func CORSConfig() cors.Config {
 func serveApplication() {
 	r := gin.Default()
 	// r.Use(middleware.CORSMiddleware())
+	r.Use(logger.SetLogger())
 	r.Use(cors.New(CORSConfig()))
 
 
