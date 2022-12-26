@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jianrong/cvwo-be/initializers"
-	"github.com/jianrong/cvwo-be/middleware"
 	"github.com/jianrong/cvwo-be/models"
 	"github.com/jianrong/cvwo-be/routes"
 )
@@ -25,9 +25,25 @@ func loadAndMigrateDB() {
 	initializers.DB.AutoMigrate(&models.User{})
 }
 
+func CORSConfig() cors.Config {
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{
+		"http://cvwo-fe.s3-website-ap-southeast-1.amazonaws.com/",
+		"https://cvwo-fe.s3.ap-southeast-1.amazonaws.com",
+		"https://d3mj3t330xelda.cloudfront.net",
+		"http://localhost:8080",
+	}
+	corsConfig.AllowCredentials = true
+	corsConfig.AddAllowHeaders("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers", "Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization")
+	corsConfig.AddAllowMethods("GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH")
+	return corsConfig
+}
+
 func serveApplication() {
 	r := gin.Default()
-	r.Use(middleware.CORSMiddleware())
+	// r.Use(middleware.CORSMiddleware())
+	r.Use(cors.New(CORSConfig()))
+
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
