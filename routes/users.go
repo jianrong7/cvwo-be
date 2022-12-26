@@ -14,7 +14,7 @@ func Users(route *gin.RouterGroup) {
 		users.GET("/", controllers.FetchAllUsers)
 		users.POST("/signup", controllers.Signup)
 		users.POST("/login", controllers.Login)
-		users.GET("/refresh", controllers.RefreshToken)
+		users.POST("/refresh", controllers.RefreshToken)
 		users.GET("/comments/:id", controllers.GetAllCommentsFromUser)
 		users.POST("/selected", controllers.GetAllSelectedEntries)
 		users.POST("/:id", middleware.RequireAuth(), controllers.UploadImageToS3)

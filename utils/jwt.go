@@ -21,7 +21,7 @@ func GenerateJWT(userId uint) (string, error) {
 		
 		"iat": time.Now().Unix(),
 		// expire token after 20 minutes
-		"exp": time.Now().Add(time.Minute * 20).Unix(),
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 	return token.SignedString(privateKey)
 }
