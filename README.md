@@ -32,7 +32,7 @@ DB_URI=YOUR_DB_URI # PostgreSQL DB_URI
 
 JWT_SECRET=YOUR_JWT_SECRET # Random string to sign JWT Tokens
 
-OPENAI_API=YOUR_OPENAI_API # OpenAI API Key to generate fetch AI generated posts
+OPENAI_API=YOUR_OPENAI_API # OpenAI API Key to fetch AI generated posts
 
 AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY # AWS S3 Key for uploading of profile pictures
 AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY # AWS S3 Key for uploading of profile pictures
@@ -72,15 +72,14 @@ models             # Contains the models as defined by the database schema.
 routes             # Contains routes to endpoints, separated by respective entities.
 utils              # Contains JWT related functions.
 docker-compose.yml # Dockerize application and start database image simultaneously.
-Dockerfile          # To dockerize application.
+Dockerfile         # To dockerize application.
 main.go            # Main app file
 ```
 
 ## Deployment
 
-This app is deployed in an AWS EC2 instance. As I do not have a custom domain and I do not want to pay for one, I used a workaround to obtain HTTPS support.
-Since the AWS EC2 instance did not allow us to generate SSL certificates, I made use of [Caddy](https://caddyserver.com/) to create a reverse proxy. This web server
-is also handy in giving automatic HTTPS support. That way, I do not need a custom domain for HTTPS support, albeit sacrificing the "niceness" of the URL.
+This app is deployed on an AWS EC2 instance. As I do not have a custom domain and I do not want to pay for one, I used a workaround to obtain HTTPS support.
+Since the AWS EC2 instance did not allow us to generate SSL certificates, I made use of [Caddy](https://caddyserver.com/) to create a reverse proxy. This web server is also handy in giving automatic HTTPS support. That way, I do not need a custom domain for HTTPS support, albeit sacrificing the "niceness" of the URL.
 
 ## Reflections
 
