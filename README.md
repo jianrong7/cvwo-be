@@ -64,6 +64,7 @@ $ go run main.go
 ## Project Structure
 
 ```sh
+backup.sh          # Cron job to backup PostgreSQL database onto the EC2 instance.
 controllers        # Handles GET, POST, PUT, DELETE logic.
 initializers       # Connect database, load environment variables, start AWS and OpenAI clients.
 middleware         # Contains the CORS middleware as well as the authentication middlware.
