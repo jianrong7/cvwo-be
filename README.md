@@ -21,7 +21,7 @@ You can find the frontend [here](https://d3mj3t330xelda.cloudfront.net) and its 
 1. Clone the reponsitory.
 
 ```
-$ git clone git@github.com:jianrong7/cvwo-fe.git
+$ git clone git@github.com:jianrong7/cvwo-be.git
 ```
 
 2. Copy template env file (`.env.example`).
@@ -83,6 +83,4 @@ main.go            # Main app file
 This app is deployed on an AWS EC2 instance. As I do not have a custom domain and I do not want to pay for one, I used a workaround to obtain HTTPS support.
 Since the AWS EC2 instance did not allow us to generate SSL certificates, I made use of [Caddy](https://caddyserver.com/) to create a reverse proxy. This web server is also handy in giving automatic HTTPS support. That way, I do not need a custom domain for HTTPS support, albeit sacrificing the "niceness" of the URL.
 
-## Reflections
-
-Reflections [here](https://github.com/jianrong7/cvwo-fe#reflections).
+## [User Manual](https://imgur.com/a/UAjL8q6)
