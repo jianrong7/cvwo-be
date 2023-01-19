@@ -14,6 +14,8 @@ You can find the frontend [here](https://d3mj3t330xelda.cloudfront.net) and its 
 
 [Mid-Assignment Writeup](https://docs.google.com/document/d/1-RYiu5qhJFxY_yzrtO3-t6H8u4rrveW-IbFkb_v6Nwo/edit?usp=sharing)
 
+[Final Writeup PDF](LohJianRong_A0252735A_FinalWriteup.pdf)
+
 [Final Writeup](https://docs.google.com/document/d/1ue6fdsfiKC5K_nJlri1ayKpaXh7ntIB6A7QUhmDAi1E/edit?usp=sharing)
 
 ## Getting started on your local machine
